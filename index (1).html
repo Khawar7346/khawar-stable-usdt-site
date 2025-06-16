@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Khawar Flasher - Stable USDT</title>
+    <style>
+        body {
+            background-color: #0f0f0f;
+            color: #00ff99;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        h1 {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+        button {
+            background-color: #00ff99;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            margin: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+            color: #000;
+        }
+        .info {
+            margin-top: 30px;
+            font-size: 1.2em;
+            background-color: #121212;
+            padding: 20px;
+            border: 1px solid #00ff99;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Khawar Flasher - Stable USDT</h1>
+    <button onclick="connectWallet()">Connect Wallet</button>
+    <div class="info" id="tokenInfo" style="display:none;">
+        <p><b>Token Name:</b> Tether USDT</p>
+        <p><b>Symbol:</b> USDT</p>
+        <p><b>Fake Price:</b> $1.00</p>
+        <p><b>Balance:</b> <span id="balance">0</span> USDT</p>
+        <button onclick="fakeTransfer()">Demo Transfer</button>
+    </div>
+
+    <script>
+        const contractAddress = "0x0a78e4bbf50ac6be67ec103655531f52097d559c";
+        const contractABI = [
+            {"constant":true,"inputs":[{"name":"account","type":"address"}],"name":"balanceOf","outputs":[{"name":"","type":"uint256"}],"type":"function"},
+            {"constant":true,"inputs":[],"name":"decimals","outputs":[{"name":"","type":"uint8"}],"type":"function"}
+        ];
+
+        let web3;
+        let contract;
+
+        async function connectWallet() {
+            if (window.ethereum) {
+                web3 = new Web3(window.ethereum);
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                const accounts = await web3.eth.getAccounts();
+                const account = accounts[0];
+                contract = new web3.eth.Contract(contractABI, contractAddress);
+                const balance = await contract.methods.balanceOf(account).call();
+                const decimals = await contract.methods.decimals().call();
+                const formattedBalance = balance / (10 ** decimals);
+                document.getElementById("balance").innerText = formattedBalance;
+                document.getElementById("tokenInfo").style.display = "block";
+            } else {
+                alert("Please install MetaMask or TrustWallet");
+            }
+        }
+
+        function fakeTransfer() {
+            alert("✅ Demo Transfer Successful!");
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.0.0-beta.36/dist/web3.min.js"></script>
+</body>
+</html>
